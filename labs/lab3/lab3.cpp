@@ -36,8 +36,9 @@ public:
 
     Complex& operator *= (const Complex& number)
     {
-        this->_a = this->_a * number._a - this->_b * number._b;
-        this->_b = this->_a * number._b + this->_b * number._a;
+        auto temp = *this;
+        this->_a = temp._a * number._a - temp._b * number._b;
+        this->_b = temp._a * number._b + temp._b * number._a;
         return *this;
     }
 
