@@ -48,7 +48,7 @@ public:
             arr[index / 8] = (~(1 << (index % 8))) & arr[index / 8] | (el << (index % 8));
     }
 
-    int& Size()
+    const int& Size()
     {
         return bSize;
     }
