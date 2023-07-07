@@ -46,8 +46,8 @@ auto Pi = std::acos(-1);
 class KinematicSolver
 {
 private:
-    double i_alpha = 0;
-    double i_beta = 0;
+    double i_alpha;
+    double i_beta;
     sf::RectangleShape i_shoulder;
     sf::RectangleShape i_forearm;
     sf::Vector2f i_A;
@@ -56,19 +56,19 @@ private:
 public:
     KinematicSolver()
     {
-        i_A = sf::Vector2f(500.f, 500.f);
+        //i_A = sf::Vector2f(500.f, 500.f);
 
-        i_shoulder.setPosition(i_A);
-        i_shoulder.setSize(sf::Vector2f(100.f, 5.f));
-        i_shoulder.setFillColor(sf::Color::White);
-        i_shoulder.setRotation(i_alpha);
+        //i_shoulder.setPosition(i_A);
+        //i_shoulder.setSize(sf::Vector2f(100.f, 5.f));
+        //i_shoulder.setFillColor(sf::Color::White);
+        //i_shoulder.setRotation(i_alpha);
 
-        i_B = i_A + i_shoulder.getSize();
+        //i_B = i_A + i_shoulder.getSize();
 
-        i_forearm.setPosition(i_B);
-        i_forearm.setSize(sf::Vector2f(100.f, 3.f));
-        i_forearm.setFillColor(sf::Color::White);
-        i_forearm.setRotation(i_beta);
+        //i_forearm.setPosition(i_B);
+        //i_forearm.setSize(sf::Vector2f(100.f, 3.f));
+        //i_forearm.setFillColor(sf::Color::White);
+        //i_forearm.setRotation(i_beta);
     }
 
     void ChangeSizeShoulder(const sf::Vector2f& size)
@@ -91,29 +91,35 @@ public:
         return i_beta;
     }
 
-    void Solve(const sf::Vector2f C)
+    void Solve(const sf::Vector2f C) // все надо высчитать, зная координаты точек "А", "С" и длины  b(длина второго плеча), c(расстояние между А и С) и a(длина первого плеча)
     {
+        double x = i_A.x + (i_shoulder.getSize().x * std::cos(i_alpha));
+        std::cout << x << "\t";
+        double y = i_A.y + (i_shoulder.getSize().x * std::sin(i_alpha));
+        std::cout << y << "\n";
+        i_B = sf::Vector2f(x, y);
+
         double a = std::sqrt(std::pow(C.x - i_B.x, 2) + std::pow(C.y - i_B.y, 2));
-        std::cout << a << "\t";
         double b = std::sqrt(std::pow(C.x - i_A.x, 2) + std::pow(C.y - i_A.y, 2));
         double c = std::sqrt(std::pow(i_A.x - i_B.x, 2) + std::pow(i_A.y - i_B.y, 2));
         std::cout << c << "\n";
         i_alpha = acos((pow(b, 2) + pow(c, 2) - pow(a, 2)) / (2 * b * c)) + atan((C.y - i_A.y) / (C.x - i_A.x)); // question about expression in atan function
-        i_beta = Pi - acos((pow(a, 2) + pow(c, 2) - pow(b, 2)) / (2 * a * c)) + i_alpha;
+        i_beta = Pi - acos((pow(a, 2) + pow(c, 2) - pow(b, 2)) / (2 * a * c));
 
     }
 
     void Draw(sf::RenderWindow& window)
     {
         i_shoulder.setRotation(i_alpha * 180 / Pi);
-        /*double x = i_A.x + (i_shoulder.getSize().x * std::cos(i_alpha * 180 / Pi));
+
+        double x = i_A.x + (i_shoulder.getSize().x * std::cos(i_alpha));
         std::cout << x << "\t";
-        double y = i_A.y + (i_shoulder.getSize().x * std::sin(i_alpha * 180 / Pi));
-        std::cout << y << "\n";*/
-        i_B = i_A + i_shoulder.getSize();
+        double y = i_A.y + (i_shoulder.getSize().x * std::sin(i_alpha));
+        std::cout << y << "\n";
+        i_B = sf::Vector2f(x, y);
 
         i_forearm.setPosition(i_B);
-        //i_forearm.setRotation(i_beta * 180 / Pi);
+        i_forearm.setRotation((-i_beta + i_alpha) * 180 / Pi);
 
         window.draw(i_shoulder);
         window.draw(i_forearm);
